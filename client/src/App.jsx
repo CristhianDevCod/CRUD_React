@@ -15,15 +15,24 @@ import TableCell, {tableCellClasses} from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import Paper from '@mui/material/Paper';
 
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+
+import React, { useRef } from 'react';
+
+
 // -----------------
 import '@fontsource/roboto/500.css';
 
 function App() {
+  const [id, setId] = useState(0);
   const [nombre, setNombre] = useState('');
   const [edad, setEdad] = useState(0);
   const [pais, setPais] = useState('');
   const [cargo, setCargo] = useState('');
   const [experiencia, setExperiencia] = useState(0);
+
+  const [editar, setEditar] = useState(false)
 
   const [empleadosLista, setEmpleados] = useState([])
 
@@ -32,15 +41,46 @@ function App() {
     Axios.post("http://localhost:3001/create",{
       nombre:nombre, edad:edad, pais:pais, cargo:cargo, experiencia:experiencia
     }).then(()=>{
-      alert('Empleado creado')
+      alert('Empleado creado');
+      get(); //llamar a actualizar
     });
   }
 
+  
   const get = () => {
     Axios.get("http://localhost:3001/empleados",).then((response)=>{
-        setEmpleados(response.data)
+      setEmpleados(response.data),
+      console.log('Personas actualizadas')
     });
   }
+
+  const edit = (val) => {
+    setEditar(true);
+
+    setNombre(val.nombre);
+    setEdad(val.edad);
+    setPais(val.pais);
+    setCargo(val.cargo);
+    setExperiencia(val.experiencia);
+    setId(val.id);
+
+    // Forzar el enfoque para activar el efecto del label flotante
+    nombreRef.current?.focus();
+    edadRef.current?.focus();
+    paisRef.current?.focus();
+    cargoRef.current?.focus();
+    experienciaRef.current?.focus();
+  }
+
+  const nombreRef = useRef();
+  const edadRef = useRef();
+  const paisRef = useRef();
+  const cargoRef = useRef();
+  const experienciaRef = useRef();
+
+
+  //Se llama continuamente
+  // get(); //Siempre que se inicialice aparezca la informacion
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -66,7 +106,9 @@ function App() {
                 id="nombre"  
                 label="Nombre" 
                 variant="outlined" 
+                value={nombre}
                 onChange={(event) => (setNombre(event.target.value))}
+                inputRef={nombreRef}
               />
             </Grid2>
 
@@ -75,7 +117,8 @@ function App() {
                 id="edad"  
                 label="Edad" 
                 variant="outlined" 
-                type='number' 
+                type='number'
+                value={edad}
                 onChange={(event) => (setEdad(event.target.value))}
               />
             </Grid2>
@@ -84,7 +127,8 @@ function App() {
             <TextField 
               id="pais"  
               label="Pais" 
-              variant="outlined" 
+              variant="outlined"
+              value={pais} 
               onChange={(event) => (setPais(event.target.value))}
             />
             </Grid2>
@@ -94,6 +138,7 @@ function App() {
                 id="cargo"  
                 label="Cargo" 
                 variant="outlined" 
+                value={cargo}
                 onChange={(event) => (setCargo(event.target.value))}
               />
             </Grid2>
@@ -104,6 +149,7 @@ function App() {
                 label="Experiencia" 
                 variant="outlined" 
                 type='number'
+                value={experiencia}
                 onChange={(event) => (setExperiencia(event.target.value))}
               />
             </Grid2>
@@ -137,6 +183,7 @@ function App() {
                   <StyledTableCell>Pais</StyledTableCell>
                   <StyledTableCell>Cargo</StyledTableCell>
                   <StyledTableCell>Experiencia</StyledTableCell>
+                  <StyledTableCell>Acciones</StyledTableCell>
                 </TableRow>
               </TableHead>
 
@@ -145,13 +192,24 @@ function App() {
                   <TableRow
                     key={persona.id}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell component="th" scope="row">
-                      {persona.nombre}
-                    </TableCell>
+                    <TableCell component="th" scope="row">{ persona.nombre }</TableCell>
                     <TableCell>{persona.edad}</TableCell>
                     <TableCell>{persona.pais}</TableCell>
                     <TableCell>{persona.cargo}</TableCell>
                     <TableCell>{persona.experiencia}</TableCell>
+                    <TableCell>
+                      <Button 
+                        variant="outlined" 
+                        color='info' 
+                        sx={{marginRight:'10px'}} 
+                        startIcon={<EditIcon />} 
+                        onClick={()=>{
+                          edit(persona)
+                        }}
+                        >Editar</Button>
+
+                      <Button variant="outlined" color='error' startIcon={<DeleteIcon />}>Eliminar</Button>
+                    </TableCell>
                   </TableRow>))}
               </TableBody>
             </Table>
