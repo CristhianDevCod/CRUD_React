@@ -1,23 +1,25 @@
 
 const express = require("express");
 const app = express();
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const cors = require('cors')
 
 app.use(cors());
 app.use(express.json());
 
-const db = mysql.createConnection({
+const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
     database: "empleados_crud"
 });//Creacion de una conecion 
 
+connection.connect();
+
 //Funcion para envolver las consultas en promesas
 const queryAsync = (query, values) => {
     return new Promise((resolve, reject) => {
-        db.query(query, values, (err, result) => {
+        connection.query(query, values, (err, result) => {
             if(err){
                 reject(err);
             } else {
@@ -35,7 +37,7 @@ app.post("/create", (req, res) => {
     const cargo = req.body.cargo;
     const experiencia = req.body.experiencia;
 
-    db.query('INSERT INTO empleados (nombre, edad, pais, cargo, experiencia) VALUES (?, ?, ?, ?, ?);', [nombre, edad, pais, cargo, experiencia], (err, result)=>{
+    connection.query('INSERT INTO empleados (nombre, edad, pais, cargo, experiencia) VALUES (?, ?, ?, ?, ?);', [nombre, edad, pais, cargo, experiencia], (err, result)=>{
         if(err){
             console.log(err)
         } else {
@@ -58,13 +60,6 @@ app.get("/empleados", async (req, res) => {
         console.error('Error al obtener empleados: ', err);
         res.status(500).json({message: 'Error en el servidor, intenta más tarde.'});
     }
-    // db.query('SELECT * FROM empleados', (err, result)=>{
-    //     if(err){
-    //         console.log(err)
-    //     } else {
-    //         res.send(result)
-    //     }
-    // })
 });
 
 //Update
@@ -76,7 +71,7 @@ app.put("/update", (req, res) => {
     const cargo = req.body.cargo;
     const experiencia = req.body.experiencia;
 
-    db.query('UPDATE empleados SET nombre=?, edad=?, pais=?, cargo=?, experiencia=? WHERE id=?;', 
+    connection.query('UPDATE empleados SET nombre=?, edad=?, pais=?, cargo=?, experiencia=? WHERE id=?;', 
         [nombre, edad, pais, cargo, experiencia, id], 
         (err, result)=>{
         if(err){
@@ -91,7 +86,7 @@ app.put("/update", (req, res) => {
 app.delete("/delete/:id", (req, res) => {
     const id = req.params.id;
 
-    db.query('DELETE FROM empleados WHERE id=?;',id, 
+    connection.query('DELETE FROM empleados WHERE id=?;',id, 
         (err, result)=>{
         if(err){
             console.log(err)
