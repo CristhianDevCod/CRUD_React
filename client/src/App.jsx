@@ -18,9 +18,6 @@ import Paper from '@mui/material/Paper';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
-import React, { useRef } from 'react';
-
-
 // -----------------
 import '@fontsource/roboto/500.css';
 
@@ -63,13 +60,6 @@ function App() {
     setCargo(val.cargo);
     setExperiencia(val.experiencia);
     setId(val.id);
-
-    // Forzar el enfoque para activar el efecto del label flotante
-    nombreRef.current?.focus();
-    edadRef.current?.focus();
-    paisRef.current?.focus();
-    cargoRef.current?.focus();
-    experienciaRef.current?.focus();
   }
 
   const cancel = () => {
