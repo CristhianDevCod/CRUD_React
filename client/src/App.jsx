@@ -80,8 +80,8 @@ function App() {
   //Read
   const get = () => {
     Axios.get("http://localhost:3001/empleados",).then((response)=>{
-      setEmpleados(response.data),
-      console.log('Personas actualizadas')
+      setEmpleados(response.data)
+      // console.log('Personas actualizadas')
     });
   }
 
