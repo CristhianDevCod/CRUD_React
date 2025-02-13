@@ -18,7 +18,6 @@ import Paper from '@mui/material/Paper';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
-// -----------------
 import '@fontsource/roboto/500.css';
 
 // Sweetalert2
@@ -69,6 +68,7 @@ function App() {
         title: <strong>Registo exitoso</strong>,
         html: <i>La persona a sido registrada {nombre}</i>,
         icon: 'success',
+        timerProgressBar: true,
         timer: 3000
       })
       get(); //llamar a actualizar
@@ -97,8 +97,9 @@ function App() {
     }).then(()=>{
       //Mostrar mensaje
       MySwal.fire({
-        title: <strong>Registo exitoso</strong>,
+        title: <strong>Actualizacion exitosa</strong>,
         html: <i>{nombre} a sido actualizada</i>,
+        timerProgressBar: true,
         icon: 'warning',
         timer: 3000
       })
@@ -109,16 +110,32 @@ function App() {
 
   //Delete
   const eliminarEmpleado = (id) => {
-    Axios.delete(`http://localhost:3001/delete/${id}`,)
-      .then(()=>{
-        //Mostrar mensaje
-      MySwal.fire({
-        title: <strong>Eliminacion exitosa</strong>,
-        html: <i>{nombre} a sido eliminado</i>,
-        icon: 'error'
-      })
-        get(); //Actualiza
+    MySwal.fire({
+      title: <strong>¿Eliminar?</strong>,
+      showDenyButton: true,
+      icon: 'error',
+      confirmButtonText: "Eliminar",
+      denyButtonText: "Cancelar",
+      confirmButtonColor: "#f44336",
+      denyButtonColor: "#2196f3"
+    }).then((result) => {
+      if(result.isConfirmed){
+        const Toast = Swal.mixin({
+          toast: true,
+          timer: 3000,
+          timerProgressBar: true,
+          confirmButtonColor: "#2196f3"
+        })
+        Toast.fire("El elemento se ha eliminado", "", "info");
+        Axios.delete(`http://localhost:3001/delete/${id}`,)
+          .then(()=>{
+          //Mostrar mensaje
+            get(); //Actualiza
+          })
+      } 
+      return;
     })
+    
   }
 
   //Se llama continuamente
@@ -217,7 +234,9 @@ function App() {
 
       <Container fixed sx={{marginTop:'30px'}}>
         <Grid2 size={12}>
-          <TableContainer component={Paper}>
+          {
+            empleadosLista.length ? 
+            <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="customized table">
               <TableHead>
                 <TableRow>
@@ -257,6 +276,12 @@ function App() {
               </TableBody>
             </Table>
           </TableContainer>
+          :
+            <Typography variant="h4" align='center' component="h3">
+              No hay personas agregados
+          </Typography>
+          }
+          
         </Grid2>
       </Container>
     </>
