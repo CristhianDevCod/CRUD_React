@@ -21,6 +21,12 @@ import EditIcon from '@mui/icons-material/Edit';
 // -----------------
 import '@fontsource/roboto/500.css';
 
+// Sweetalert2
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+
+const MySwal = withReactContent(Swal)
+
 function App() {
   const [id, setId] = useState(0);
   const [nombre, setNombre] = useState('');
@@ -30,30 +36,10 @@ function App() {
   const [experiencia, setExperiencia] = useState(0);
 
   const [editar, setEditar] = useState(false)
-
   const [empleadosLista, setEmpleados] = useState([])
-
-  const add = (event) => {
-    event.preventDefault()
-    Axios.post("http://localhost:3001/create",{
-      nombre:nombre, edad:edad, pais:pais, cargo:cargo, experiencia:experiencia
-    }).then(()=>{
-      alert('Empleado creado');
-      get(); //llamar a actualizar
-    });
-  }
-
-  
-  const get = () => {
-    Axios.get("http://localhost:3001/empleados",).then((response)=>{
-      setEmpleados(response.data),
-      console.log('Personas actualizadas')
-    });
-  }
 
   const edit = (val) => {
     setEditar(true);
-
     setNombre(val.nombre);
     setEdad(val.edad);
     setPais(val.pais);
@@ -65,15 +51,78 @@ function App() {
   const cancel = () => {
     setEditar(false);
     setNombre('');
-    setEdad(undefined);
+    setEdad('');
     setPais('');
     setCargo('');
-    setExperiencia(undefined);
-    // setId(val.id);
+    setExperiencia('');
+    // setId(null);
+  }
+
+  //Create
+  const add = (event) => {
+    event.preventDefault()
+    Axios.post("http://localhost:3001/create",{
+      nombre:nombre, edad:edad, pais:pais, cargo:cargo, experiencia:experiencia
+    }).then(()=>{
+      //Mostrar mensaje
+      MySwal.fire({
+        title: <strong>Registo exitoso</strong>,
+        html: <i>La persona a sido registrada {nombre}</i>,
+        icon: 'success',
+        timer: 3000
+      })
+      get(); //llamar a actualizar
+      //limpiar campos
+      cancel();
+    });
+  }
+
+  //Read
+  const get = () => {
+    Axios.get("http://localhost:3001/empleados",).then((response)=>{
+      setEmpleados(response.data),
+      console.log('Personas actualizadas')
+    });
+  }
+
+  //Update
+  const update = () => {
+    Axios.put("http://localhost:3001/update",{
+      id:id, 
+      nombre:nombre, 
+      edad:edad, 
+      pais:pais, 
+      cargo:cargo, 
+      experiencia:experiencia
+    }).then(()=>{
+      //Mostrar mensaje
+      MySwal.fire({
+        title: <strong>Registo exitoso</strong>,
+        html: <i>{nombre} a sido actualizada</i>,
+        icon: 'warning',
+        timer: 3000
+      })
+      get(); //llamar a actualizar
+      cancel();
+    });
+  }
+
+  //Delete
+  const eliminarEmpleado = (id) => {
+    Axios.delete(`http://localhost:3001/delete/${id}`,)
+      .then(()=>{
+        //Mostrar mensaje
+      MySwal.fire({
+        title: <strong>Eliminacion exitosa</strong>,
+        html: <i>{nombre} a sido eliminado</i>,
+        icon: 'error'
+      })
+        get(); //Actualiza
+    })
   }
 
   //Se llama continuamente
-  // get(); //Siempre que se inicialice aparezca la informacion
+  // get(); //Siempre que se inicialice aparezca la información
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -150,14 +199,14 @@ function App() {
               {
                 editar ?
                 <Grid2>
-                  <Button variant="contained" color='warning' onClick={edit} type='submit'>Actualizar Persona</Button>
-                  <Button variant="contained" color='error' onClick={cancel} type='submit'>Cancelar</Button>
+                  <Button variant="contained" color='warning' onClick={update} type='submit'>Actualizar Persona</Button>
+                  <Button sx={{marginLeft:'20px'}} variant="contained" color='error' onClick={cancel} type='submit'>Cancelar</Button>
                 </Grid2>
-                :<Button variant="contained" color='info' onClick={add} type='submit'>Agregar Persona</Button>
+                :<Button variant="contained" color='success' onClick={add} type='submit'>Agregar Persona</Button>
               }
               <Button 
                 variant="contained"
-                color='info'
+                color='primary'
                 onClick={get}
                 type='submit'
               >Listar personas</Button>
@@ -202,7 +251,7 @@ function App() {
                         }}
                         >Editar</Button>
 
-                      <Button variant="outlined" color='error' startIcon={<DeleteIcon />}>Eliminar</Button>
+                      <Button variant="outlined" onClick={()=>(eliminarEmpleado(persona.id))} color='error' startIcon={<DeleteIcon />}>Eliminar</Button>
                     </TableCell>
                   </TableRow>))}
               </TableBody>
