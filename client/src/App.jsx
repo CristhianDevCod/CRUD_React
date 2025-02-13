@@ -72,12 +72,15 @@ function App() {
     experienciaRef.current?.focus();
   }
 
-  const nombreRef = useRef();
-  const edadRef = useRef();
-  const paisRef = useRef();
-  const cargoRef = useRef();
-  const experienciaRef = useRef();
-
+  const cancel = () => {
+    setEditar(false);
+    setNombre('');
+    setEdad(undefined);
+    setPais('');
+    setCargo('');
+    setExperiencia(undefined);
+    // setId(val.id);
+  }
 
   //Se llama continuamente
   // get(); //Siempre que se inicialice aparezca la informacion
@@ -108,7 +111,6 @@ function App() {
                 variant="outlined" 
                 value={nombre}
                 onChange={(event) => (setNombre(event.target.value))}
-                inputRef={nombreRef}
               />
             </Grid2>
 
@@ -155,12 +157,14 @@ function App() {
             </Grid2>
 
             <Grid2 size={12} container="true" direction={"row"} sx={{justifyContent: "center", alignItems:"center"}}>
-              <Button 
-                variant="contained"
-                color='warning'
-                onClick={add}
-                type='submit'
-              >Agregar persona</Button>
+              {
+                editar ?
+                <Grid2>
+                  <Button variant="contained" color='warning' onClick={edit} type='submit'>Actualizar Persona</Button>
+                  <Button variant="contained" color='error' onClick={cancel} type='submit'>Cancelar</Button>
+                </Grid2>
+                :<Button variant="contained" color='info' onClick={add} type='submit'>Agregar Persona</Button>
+              }
               <Button 
                 variant="contained"
                 color='info'
