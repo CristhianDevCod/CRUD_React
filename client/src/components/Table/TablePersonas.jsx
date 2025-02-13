@@ -5,11 +5,24 @@ import TableRow from '@mui/material/TableRow';
 import TableCell, {tableCellClasses} from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { styled } from '@mui/material/styles';
+import PropTypes from 'prop-types';
 
-function Table({persona}){
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+function TablePersonas({personas, edit, eliminarEmpleado}){
     return(
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="customized table">
@@ -25,7 +38,7 @@ function Table({persona}){
               </TableHead>
 
               <TableBody>
-                {empleadosLista.map((persona) => (
+                {personas.map((persona) => (
                   <TableRow
                     key={persona.id}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -54,4 +67,10 @@ function Table({persona}){
     )
 }
 
-export default Table;
+TablePersonas.propTypes = {
+  personas: PropTypes.array.isRequired,
+  edit: PropTypes.func.isRequired,
+  eliminarEmpleado: PropTypes.func.isRequired
+}
+
+export default TablePersonas;

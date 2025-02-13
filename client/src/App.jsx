@@ -1,9 +1,7 @@
-import FormControl from '@mui/material/FormControl';
-import { TextField, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
+
+import { Typography } from '@mui/material';
 import Grid2  from '@mui/material/Grid2/Grid2.js';
 import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
 import { useState } from 'react';
 import Axios from 'axios'
 
@@ -12,6 +10,9 @@ import '@fontsource/roboto/500.css';
 // Sweetalert2
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+
+import TablePersonas from './components/Table/TablePersonas';
+import FormControlR from './components/Formulario/FormControl';
 
 const MySwal = withReactContent(Swal)
 
@@ -110,10 +111,12 @@ function App() {
     }).then((result) => {
       if(result.isConfirmed){
         const Toast = Swal.mixin({
+          position: "top-end",
           toast: true,
           timer: 3000,
           timerProgressBar: true,
-          confirmButtonColor: "#2196f3"
+          confirmButtonColor: "#2196f3",
+          showConfirmButton: false
         })
         Toast.fire("El elemento se ha eliminado", "", "info");
         Axios.delete(`http://localhost:3001/delete/${id}`,)
@@ -130,16 +133,6 @@ function App() {
   //Se llama continuamente
   // get(); //Siempre que se inicialice aparezca la información
 
-  const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
-    },
-  }));
-
   return (
     <>
       <Container fixed>
@@ -147,125 +140,31 @@ function App() {
         Pruebas
       </Typography>
 
-        <FormControl>
-          <Grid2 container spacing={4}>
-            <Grid2 size={6}>
-              <TextField 
-                id="nombre"  
-                label="Nombre" 
-                variant="outlined" 
-                value={nombre}
-                onChange={(event) => (setNombre(event.target.value))}
-              />
-            </Grid2>
-
-            <Grid2 size={6}>
-              <TextField 
-                id="edad"  
-                label="Edad" 
-                variant="outlined" 
-                type='number'
-                value={edad}
-                onChange={(event) => (setEdad(event.target.value))}
-              />
-            </Grid2>
-
-            <Grid2 size={6}>
-            <TextField 
-              id="pais"  
-              label="Pais" 
-              variant="outlined"
-              value={pais} 
-              onChange={(event) => (setPais(event.target.value))}
-            />
-            </Grid2>
-
-            <Grid2 size={6}>
-              <TextField 
-                id="cargo"  
-                label="Cargo" 
-                variant="outlined" 
-                value={cargo}
-                onChange={(event) => (setCargo(event.target.value))}
-              />
-            </Grid2>
-
-            <Grid2 size={12} container="true" direction="row" sx={{ justifyContent: "center", alignItems: "center"}}>
-              <TextField 
-                id="experiencia"  
-                label="Experiencia" 
-                variant="outlined" 
-                type='number'
-                value={experiencia}
-                onChange={(event) => (setExperiencia(event.target.value))}
-              />
-            </Grid2>
-
-            <Grid2 size={12} container="true" direction={"row"} sx={{justifyContent: "center", alignItems:"center"}}>
-              {
-                editar ?
-                <Grid2>
-                  <Button variant="contained" color='warning' onClick={update} type='submit'>Actualizar Persona</Button>
-                  <Button sx={{marginLeft:'20px'}} variant="contained" color='error' onClick={cancel} type='submit'>Cancelar</Button>
-                </Grid2>
-                :<Button variant="contained" color='success' onClick={add} type='submit'>Agregar Persona</Button>
-              }
-              <Button 
-                variant="contained"
-                color='primary'
-                onClick={get}
-                type='submit'
-              >Listar personas</Button>
-            </Grid2>
-          </Grid2>
-        </FormControl>
+        {/* Formulario aquí */}
+        <FormControlR 
+          nombre={ nombre}
+          setNombre={setNombre}
+          edad ={edad}
+          setEdad={setEdad}
+          pais={pais}
+          setPais={setPais}
+          cargo={cargo}
+          setCargo={setCargo}
+          experiencia={experiencia}
+          setExperiencia={setExperiencia}
+          editar={editar}
+          update={update}
+          cancel={cancel}
+          add={add}
+          get={get}
+        ></FormControlR>
       </Container>
 
       <Container fixed sx={{marginTop:'30px'}}>
         <Grid2 size={12}>
           {
             empleadosLista.length ? 
-          //   <TableContainer component={Paper}>
-          //   <Table sx={{ minWidth: 650 }} aria-label="customized table">
-          //     <TableHead>
-          //       <TableRow>
-          //         <StyledTableCell>Nombre</StyledTableCell>
-          //         <StyledTableCell>Edad</StyledTableCell>
-          //         <StyledTableCell>Pais</StyledTableCell>
-          //         <StyledTableCell>Cargo</StyledTableCell>
-          //         <StyledTableCell>Experiencia</StyledTableCell>
-          //         <StyledTableCell>Acciones</StyledTableCell>
-          //       </TableRow>
-          //     </TableHead>
-
-          //     <TableBody>
-          //       {empleadosLista.map((persona) => (
-          //         <TableRow
-          //           key={persona.id}
-          //           sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-          //           <TableCell component="th" scope="row">{ persona.nombre }</TableCell>
-          //           <TableCell>{persona.edad}</TableCell>
-          //           <TableCell>{persona.pais}</TableCell>
-          //           <TableCell>{persona.cargo}</TableCell>
-          //           <TableCell>{persona.experiencia}</TableCell>
-          //           <TableCell>
-          //             <Button 
-          //               variant="outlined" 
-          //               color='info' 
-          //               sx={{marginRight:'10px'}} 
-          //               startIcon={<EditIcon />} 
-          //               onClick={()=>{
-          //                 edit(persona)
-          //               }}
-          //               >Editar</Button>
-
-          //             <Button variant="outlined" onClick={()=>(eliminarEmpleado(persona.id))} color='error' startIcon={<DeleteIcon />}>Eliminar</Button>
-          //           </TableCell>
-          //         </TableRow>))}
-          //     </TableBody>
-          //   </Table>
-          // </TableContainer>
-
+            <TablePersonas personas={empleadosLista} edit={edit} eliminarEmpleado={eliminarEmpleado} ></TablePersonas>
           :
             <Typography variant="h4" align='center' component="h3">
               No hay personas agregados
