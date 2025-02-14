@@ -3,6 +3,7 @@ import { Typography } from '@mui/material';
 import Grid2  from '@mui/material/Grid2/Grid2.js';
 import Container from '@mui/material/Container';
 import { useState } from 'react';
+// import { useEffect } from 'react';
 import Axios from 'axios'
 
 import '@fontsource/roboto/500.css';
@@ -129,9 +130,6 @@ function App() {
     })
     
   }
-
-  //Se llama continuamente
-  // get(); //Siempre que se inicialice aparezca la información
 
   return (
     <>
