@@ -69,12 +69,6 @@ function FormControlR({nombre, setNombre, edad, setEdad, pais, setPais, cargo, s
                 </Grid2>
                 :<Button variant="contained" color='success' onClick={add} type='submit'>Agregar Persona</Button>
               }
-              <Button 
-                variant="contained"
-                color='primary'
-                onClick={get}
-                type='submit'
-              >Listar personas</Button>
             </Grid2>
           </Grid2>
         </FormControl>

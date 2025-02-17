@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Axios from "axios";
 // Sweetalert2
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -41,9 +40,18 @@ const useEmpleados = () => {
     const add = async (event) => {
         event.preventDefault();
         try {
-            await Axios.post("http://localhost:3001/create", {
-                nombre, edad, pais, cargo, experiencia,
+            const response = await fetch("http://localhost:3001/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({nombre, edad, pais, cargo, experiencia}),
             });
+
+            if (!response.ok){
+                throw new Error("Error al agregar empleado");
+            }
+
             await get();
             cancel();
             //Mostrar mensaje
@@ -68,8 +76,12 @@ const useEmpleados = () => {
     //Read
     const get = async () => {
         try {
-            const response = await Axios.get("http://localhost:3001/empleados");
-            setEmpleados(response.data);
+            const response = await fetch("http://localhost:3001/empleados");
+            if(!response.ok){
+                throw new Error("Error al cargar empleados");
+            }
+            const data = await response.json();
+            setEmpleados(data);
         } catch (error){
             MySwal.fire({
                 title: <strong>Error al cargar empleados</strong>,
@@ -82,14 +94,18 @@ const useEmpleados = () => {
     //Update
     const update = async () => {
         try {
-            await Axios.put("http://localhost:3001/update",{
-                id:id, 
-                nombre:nombre, 
-                edad:edad, 
-                pais:pais, 
-                cargo:cargo, 
-                experiencia:experiencia
-                });
+            const response = await fetch("http://localhost:3001/update",{
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({id:id, nombre:nombre, edad:edad, pais:pais, cargo:cargo, experiencia:experiencia}),
+            });
+
+            if (!response.ok){
+                throw new Error("Error al actualizar empleado");
+            }
+
             await get();
             cancel();
             //Mostrar mensaje
@@ -126,7 +142,14 @@ const useEmpleados = () => {
         
         if(result.isConfirmed){
             try {
-                await Axios.delete(`http://localhost:3001/delete/${id}`);
+                const response = await fetch(`http://localhost:3001/delete/${id}`, {
+                    method: "DELETE",
+                });
+
+                if(!response.ok){
+                    throw new Error("Error al eliminar empleado");
+                }
+
                 await get();
                 const Toast = Swal.mixin({
                     position: "top-end",

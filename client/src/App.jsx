@@ -16,14 +16,6 @@ function App() {
     get(); //Carga incial de empleados
   }, []);
 
-  useEffect(() => {
-    console.log("Efecto montado o actualizado");
-
-    return() => {
-      console.log("Limpieza: El efecto se desmonta o se actualiza");
-    }
-  })
-
   return (
     <>
       <Container fixed>
